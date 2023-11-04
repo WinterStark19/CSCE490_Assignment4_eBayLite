@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+
+    <form action ="{% url 'showcategory' %}" method = "GET" >
+        {% csrf_token %}
+        <label for = "category"> Choose a category: </label>
+        <select name = "category" id = "category">
+            {% for cater in categories %}
+                <option value = "{{ cater }}">{{ cater }}</option>
+            {% endfor %}
+        </select>
+        <button type = "submit" class = "btn btn-primary"> Filter</button>
+    </form>
+
+{% endblock %}

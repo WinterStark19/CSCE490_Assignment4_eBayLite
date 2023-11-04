@@ -11,10 +11,9 @@ from .models import User, Auction, Category
 
 def index(request):
     active = Auction.objects.filter(closed=False)
-    allSorted = Category.objects.all()
     return render(request, "auctions/index.html", {
         "listings": active,
-        "categories":allSorted
+        "header_text": "Active Listings",
     })
 
 
@@ -76,7 +75,7 @@ def create(request):
         listingTitle = request.POST["title"]
         itemDescription = request.POST["description"]
         currentPrice = request.POST["price"]
-        imageurl = request.POST["imageUrl"]
+        imageurl = request.POST.get("imageUrl")
         category = request.POST["category"]
         seller = request.user
 
@@ -86,7 +85,7 @@ def create(request):
             title = listingTitle,
             description = itemDescription,
             price = currentPrice,
-            imageUrl = imageurl,
+            imageurl = imageurl,
             category = categoryInfo,
             seller = seller
             )
@@ -100,17 +99,23 @@ def create(request):
                       {"categories": create_form})
 
 
+def categories(request):
+    return render(request, "auctions/categories.html", {
+            "categories": Category.objects.all()
+        })
+
+    
 def showcategory(request):
-    if request.method == "POST":
-        getCategory = request.POST['category']
+    if request.method == "GET":
+        getCategory = request.GET['category']
         newCategory = Category.objects.get(title = getCategory)
         active = Auction.objects.filter(closed=False, category = newCategory)
-        allSorted = Category.objects.all()
+        # if your form is POST, you would need to redirect
         return render(request, "auctions/index.html", {
             "listings": active,
-            "categories": allSorted
+            "header_text": f'Category {newCategory}: Active Listings',
         })
 
 
 def listings(request, id):
- return render(request, "auctions/listings.html")
+    return render(request, "auctions/listings.html")
